@@ -29,9 +29,12 @@ jobs:
       - name: crash test (smoke)
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq postgresql-16 postgresql-client-16 > /tmp/apt.log 2>&1 || { tail -5 /tmp/apt.log | sed 's/^/::error::apt: /'; exit 1; }
+          # whichever PostgreSQL the runner image offers is fine; the harness only needs initdb, pg_ctl, psql and createdb
+          sudo apt-get install -y -qq postgresql > /tmp/apt.log 2>&1 || { tail -5 /tmp/apt.log | sed 's/^/::error::apt: /'; exit 1; }
+          PGBIN=$(ls -d /usr/lib/postgresql/*/bin | sort -V | tail -1)
+          echo "using $PGBIN"
           set +e
-          java tools/crashtest/CrashTest.java --pg-bin /usr/lib/postgresql/16/bin --workers 2 --cycles 10 --out /tmp/crash > /tmp/crash.out 2>&1
+          java tools/crashtest/CrashTest.java --pg-bin "$PGBIN" --workers 2 --cycles 10 --out /tmp/crash > /tmp/crash.out 2>&1
           rc=$?
           if [ $rc -ne 0 ]; then
             # surface the reason as public annotations (job logs need a login to read)
