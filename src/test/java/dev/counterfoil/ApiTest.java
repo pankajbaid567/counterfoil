@@ -20,6 +20,7 @@ import org.springframework.test.context.DynamicPropertySource;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ApiTest {
     static final String KEY = "test-api-key-0123456789";
+    static final String WH_SECRET = "api-test-webhook-secret-0123456789";
     static final ObjectMapper M = new ObjectMapper();
     static final HttpClient HTTP = HttpClient.newHttpClient();
 
@@ -31,6 +32,7 @@ class ApiTest {
         r.add("spring.datasource.password", TestPostgres::password);
         r.add("spring.datasource.hikari.maximum-pool-size", () -> "6");   // the cached Spring context holds its pool for the whole JVM
         r.add("counterfoil.api-key", () -> KEY);
+        r.add("counterfoil.webhook.secret", () -> WH_SECRET);
         r.add("counterfoil.webhook.dispatcher-enabled", () -> "false");
     }
 
@@ -125,7 +127,7 @@ class ApiTest {
         // the PSP settles 7,000 into our bank; delivered twice
         long now = Instant.now().getEpochSecond();
         String evt = "{\"id\":\"evt-" + UUID.randomUUID() + "\",\"type\":\"psp.settlement.paid\",\"data\":{\"amount\":7000,\"reference\":\"b-" + UUID.randomUUID() + "\"}}";
-        String sig = WebhookSigner.sign("dev-only-webhook-secret", now, evt);
+        String sig = WebhookSigner.sign(WH_SECRET, now, evt);
         Res w1 = call("POST", "/v1/webhooks/psp", null, null, evt, "Counterfoil-Signature", sig);
         Res w2 = call("POST", "/v1/webhooks/psp", null, null, evt, "Counterfoil-Signature", sig);
         assertThat(w1.json().path("result").asText()).isEqualTo("APPLIED");

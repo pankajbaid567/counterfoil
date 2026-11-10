@@ -27,6 +27,7 @@ Needs JDK 21+ and PostgreSQL. No other install: `./mvnw` downloads a checksum-ve
 ./mvnw package -DskipTests
 export DATABASE_URL=jdbc:postgresql://localhost:5432/counterfoil DATABASE_USER=counterfoil DATABASE_PASSWORD=...
 export COUNTERFOIL_API_KEY=$(openssl rand -hex 16)   # or COUNTERFOIL_ALLOW_NO_AUTH=true for local development only
+export COUNTERFOIL_WEBHOOK_SECRET=$(openssl rand -hex 16)   # required whenever the API key is set (the inbound PSP webhook is authenticated by it)
 java -jar target/counterfoil.jar
 ```
 

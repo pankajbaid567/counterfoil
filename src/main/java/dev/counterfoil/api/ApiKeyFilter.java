@@ -39,6 +39,12 @@ public class ApiKeyFilter extends OncePerRequestFilter {
             if (k.length() < 16) {
                 throw new IllegalStateException("COUNTERFOIL_API_KEY must be at least 16 characters");
             }
+            // With authentication on, the inbound PSP webhook is authenticated only by this secret. The built-in default is
+            // public (it is in the source), so running with it would let anyone forge settlement events.
+            String ws = props.webhook().secret();
+            if (ws == null || ws.length() < 16 || ws.equals("dev-only-webhook-secret")) {
+                throw new IllegalStateException("COUNTERFOIL_WEBHOOK_SECRET must be set to a random value of at least 16 characters");
+            }
             this.open = false;
             this.key = sha(k);
         }
