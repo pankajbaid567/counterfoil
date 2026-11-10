@@ -29,6 +29,7 @@ class ApiTest {
         r.add("spring.datasource.url", () -> TestPostgres.newDatabaseUrl("api"));
         r.add("spring.datasource.username", TestPostgres::user);
         r.add("spring.datasource.password", TestPostgres::password);
+        r.add("spring.datasource.hikari.maximum-pool-size", () -> "6");   // the cached Spring context holds its pool for the whole JVM
         r.add("counterfoil.api-key", () -> KEY);
         r.add("counterfoil.webhook.dispatcher-enabled", () -> "false");
     }

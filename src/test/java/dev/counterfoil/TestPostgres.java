@@ -118,7 +118,18 @@ public final class TestPostgres {
         return url;
     }
 
-    public static DataSource newDataSource(String prefix, int poolSize) {
+    private static final java.util.List<HikariDataSource> POOLS = new java.util.ArrayList<>();
+
+    /**
+     * Tests run one after another and each builds its own TestEnv, so any pool made earlier is finished with. Closing
+     * them here keeps the connection count low: leaking them reached 98 of PostgreSQL's default 100 connections and
+     * made CI order-dependent.
+     */
+    public static synchronized DataSource newDataSource(String prefix, int poolSize) {
+        for (HikariDataSource old : POOLS) {
+            old.close();
+        }
+        POOLS.clear();
         String url = newDatabaseUrl(prefix);
         HikariConfig cfg = new HikariConfig();
         cfg.setJdbcUrl(url);
@@ -126,7 +137,9 @@ public final class TestPostgres {
         cfg.setPassword(password);
         cfg.setMaximumPoolSize(poolSize);
         cfg.setMinimumIdle(1);
-        return new HikariDataSource(cfg);
+        HikariDataSource ds = new HikariDataSource(cfg);
+        POOLS.add(ds);
+        return ds;
     }
 
     public static String user() {
