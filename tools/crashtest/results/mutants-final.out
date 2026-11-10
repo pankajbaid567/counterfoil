@@ -1,0 +1,9 @@
+mutant 1: lines not sorted by account id: CAUGHT (20s) tests failed: LedgerConcurrencyTest
+mutant 2: overdraft check removed: CAUGHT (8s) tests failed: LedgerSchemaTest, LedgerServiceTest, PaymentServiceTest
+mutant 3: idempotency claim never inserted: CAUGHT (7s) tests failed: IdempotencyTest
+mutant 4: double-capture guards removed: CAUGHT (6s) tests failed: PaymentServiceTest
+mutant 5: outbox event outside the transaction: CAUGHT (7s) tests failed: PaymentServiceTest
+mutant 6: receiver de-duplication removed: CAUGHT (5s) tests failed: WebhookTest
+mutant 7: idempotency key claimed in a separate transaction: CAUGHT (193s) crash harness: VIOLATION worker 3 cycle 40: request key-p1470-create never completed (stuck processing)
+
+7/7 mutants caught

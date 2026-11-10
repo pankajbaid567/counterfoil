@@ -1,0 +1,22 @@
+# Render blueprint. DATABASE_URL, DATABASE_USER, DATABASE_PASSWORD (a Neon or Render Postgres) and COUNTERFOIL_API_KEY
+# are secrets: set them in the Render dashboard, never in this file.
+services:
+  - type: web
+    name: counterfoil-demo
+    runtime: docker
+    plan: free
+    region: singapore
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_USER
+        sync: false
+      - key: DATABASE_PASSWORD
+        sync: false
+      - key: COUNTERFOIL_API_KEY
+        sync: false
+      - key: COUNTERFOIL_WEBHOOK_SECRET
+        generateValue: true
+      - key: DB_POOL_SIZE
+        value: "5"

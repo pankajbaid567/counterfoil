@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: counterfoil
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/counterfoil}
+    username: ${DATABASE_USER:counterfoil}
+    password: ${DATABASE_PASSWORD:}
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:16}
+  flyway:
+    enabled: true
+  main:
+    lazy-initialization: false
+  jackson:
+    default-property-inclusion: non_null
+    property-naming-strategy: SNAKE_CASE
+server:
+  port: ${PORT:8080}
+  shutdown: graceful
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics
+counterfoil:
+  allow-no-auth: ${COUNTERFOIL_ALLOW_NO_AUTH:false}
+  api-key: ${COUNTERFOIL_API_KEY:}
+  webhook:
+    secret: ${COUNTERFOIL_WEBHOOK_SECRET:dev-only-webhook-secret}
+    target-url: ${COUNTERFOIL_WEBHOOK_URL:}
+    dispatcher-enabled: true
+    max-attempts: ${COUNTERFOIL_WEBHOOK_MAX_ATTEMPTS:8}
+    backoff-base-ms: ${COUNTERFOIL_WEBHOOK_BACKOFF_MS:500}
+    lease-seconds: ${COUNTERFOIL_WEBHOOK_LEASE_SECONDS:30}
+    poll-ms: ${COUNTERFOIL_WEBHOOK_POLL_MS:500}
+  psp:
+    seed: ${COUNTERFOIL_PSP_SEED:1}
+    p-decline: ${COUNTERFOIL_PSP_P_DECLINE:0.0}
+    p-timeout-before: ${COUNTERFOIL_PSP_P_TIMEOUT_BEFORE:0.0}
+    p-timeout-after: ${COUNTERFOIL_PSP_P_TIMEOUT_AFTER:0.0}
+  recovery:
+    stale-after-seconds: ${COUNTERFOIL_RECOVERY_STALE_SECONDS:20}
+    interval-ms: ${COUNTERFOIL_RECOVERY_INTERVAL_MS:2000}

@@ -1,0 +1,2 @@
+runs=1000 (kill+restart+verify cycles) workers=5 seconds=5724 tasks_completed=41785 violations=0 bad_signatures=0 webhook_events_received=92792 events_delivered_more_than_once=29
+PASS

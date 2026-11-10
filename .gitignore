@@ -1,0 +1,8 @@
+.tools/
+target/
+.pgdata/
+*.log
+.idea/
+.DS_Store
+out/
+.mutants/
