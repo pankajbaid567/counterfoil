@@ -28,7 +28,16 @@ jobs:
         run: ./mvnw -B -q package -DskipTests
       - name: crash test (smoke)
         run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-16 >/dev/null
-          java tools/crashtest/CrashTest.java --pg-bin /usr/lib/postgresql/16/bin --workers 2 --cycles 10 --out /tmp/crash
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-16 postgresql-client-16 > /tmp/apt.log 2>&1 || { tail -5 /tmp/apt.log | sed 's/^/::error::apt: /'; exit 1; }
+          set +e
+          java tools/crashtest/CrashTest.java --pg-bin /usr/lib/postgresql/16/bin --workers 2 --cycles 10 --out /tmp/crash > /tmp/crash.out 2>&1
+          rc=$?
+          if [ $rc -ne 0 ]; then
+            # surface the reason as public annotations (job logs need a login to read)
+            tail -15 /tmp/crash.out | sed 's/^/::error::crash: /'
+            for f in /tmp/crash/app-w*.log; do tail -6 "$f" | sed 's/^/::error::app: /'; done
+          fi
+          exit $rc
       - name: injected bugs must be caught (unit-test mutants)
         run: python3 scripts/mutation_check.py --skip-crash
