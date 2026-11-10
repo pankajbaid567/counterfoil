@@ -67,6 +67,13 @@ class ApiTest {
     }
 
     @Test
+    void theRootPageExplainsWhatThisIsWithoutAuthentication() throws Exception {
+        Res r = call("GET", "/", null, null, null);
+        assertThat(r.status()).isEqualTo(200);
+        assertThat(r.body()).contains("Counterfoil").contains("/actuator/health").doesNotContain("Exception");
+    }
+
+    @Test
     void journalEntryLifecycleWithIdempotencyAndErrorModel() throws Exception {
         assertThat(post("/v1/accounts", null, "{\"code\":\"cash-a\",\"name\":\"Cash\",\"type\":\"ASSET\",\"currency\":\"INR\",\"allow_negative\":true}").status()).isEqualTo(201);
         assertThat(post("/v1/accounts", null, "{\"code\":\"equity-a\",\"name\":\"Equity\",\"type\":\"EQUITY\",\"currency\":\"INR\"}").status()).isEqualTo(201);
